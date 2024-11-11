@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: shell-operator
+  name: shell-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shell-operator
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: shell-operator
+    spec:
+      containers:
+      - image: ovidiuborlean/shellops
+        name: shellops
+        resources: {}
+        volumeMounts:
+        - mountPath: /hooks
+          name: repos
+      initContainers:
+      - name: initgit
+        image: alpine/git
+        command: ['sh', '-c', "git clone https://$TOKEN/ovidiuborlean/shell-operator.git /hooks"]
+        volumeMounts:
+        - mountPath: /hooks
+          name: repos
+      volumes:
+      - name: repos
+        emptyDir:
+          sizeLimit: 50Mi
